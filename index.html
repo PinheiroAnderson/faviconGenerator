@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Universal Icon Generator</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+  </head>
+  <body>
+    <div class="app">
+      <header class="header">
+        <div class="header-icon">🎨</div>
+        <h1>ICON GENERATOR</h1>
+        <p>Gere todos os ícones automaticamente para Web, Windows, Android, iOS e Linux</p>
+      </header>
+
+      <main class="main">
+        <section class="card upload-card" id="uploadCard">
+          <div id="dropZone">
+            <div class="drop-icon">
+              <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="17 8 12 3 7 8" />
+                <line x1="12" y1="3" x2="12" y2="15" />
+              </svg>
+            </div>
+            <p class="drop-text">Arraste uma imagem aqui</p>
+            <span class="drop-or">ou</span>
+            <button class="btn-secondary" id="btnChooseFile">Escolher Arquivo</button>
+            <input type="file" id="fileInput" accept="image/png,image/jpeg,image/jpg,image/webp,image/svg+xml" hidden />
+            <p class="drop-hint">Suporta PNG, JPG, WEBP e SVG</p>
+          </div>
+        </section>
+
+        <section class="card preview-card" id="previewCard" style="display: none">
+          <h2 class="card-title">Preview</h2>
+          <div class="preview-layout">
+            <div class="canvas-wrapper">
+              <canvas id="previewCanvas" width="256" height="256"></canvas>
+              <div class="canvas-bg" id="canvasBg"></div>
+            </div>
+            <div class="controls-panel">
+              <div class="control-group">
+                <label for="zoom">Zoom</label>
+                <div class="range-row">
+                  <span class="range-value" id="zoomVal">1.00x</span>
+                  <input type="range" id="zoom" min="0.5" max="2" step="0.01" value="1" />
+                </div>
+              </div>
+              <div class="control-group">
+                <label for="posX">Posição X</label>
+                <div class="range-row">
+                  <span class="range-value" id="posXVal">0</span>
+                  <input type="range" id="posX" min="-50" max="50" step="1" value="0" />
+                </div>
+              </div>
+              <div class="control-group">
+                <label for="posY">Posição Y</label>
+                <div class="range-row">
+                  <span class="range-value" id="posYVal">0</span>
+                  <input type="range" id="posY" min="-50" max="50" step="1" value="0" />
+                </div>
+              </div>
+              <div class="control-group">
+                <label>Fundo</label>
+                <div class="bg-options">
+                  <button class="bg-btn active" data-bg="white" style="--bg: #ffffff">Branco</button>
+                  <button class="bg-btn" data-bg="black" style="--bg: #000000">Preto</button>
+                  <button class="bg-btn" data-bg="blue" style="--bg: #3b82f6">Azul</button>
+                  <button class="bg-btn" data-bg="transparent">Transp.</button>
+                  <button class="bg-btn" data-bg="custom">Personal.</button>
+                  <input type="color" id="bgColor" value="#3b82f6" hidden />
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card platforms-card" id="platformsCard" style="display: none">
+          <h2 class="card-title">Gerar para</h2>
+          <div class="platforms-grid">
+            <label class="platform-cb">
+              <input type="checkbox" id="chkWeb" checked />
+              <span class="cb-custom"></span>
+              <span class="cb-label">🌐 Web</span>
+            </label>
+            <label class="platform-cb">
+              <input type="checkbox" id="chkWindows" checked />
+              <span class="cb-custom"></span>
+              <span class="cb-label">🖥️ Windows</span>
+            </label>
+            <label class="platform-cb">
+              <input type="checkbox" id="chkAndroid" checked />
+              <span class="cb-custom"></span>
+              <span class="cb-label">📱 Android</span>
+            </label>
+            <label class="platform-cb">
+              <input type="checkbox" id="chkiOS" checked />
+              <span class="cb-custom"></span>
+              <span class="cb-label">🍎 iOS</span>
+            </label>
+            <label class="platform-cb">
+              <input type="checkbox" id="chkLinux" checked />
+              <span class="cb-custom"></span>
+              <span class="cb-label">🐧 Linux</span>
+            </label>
+          </div>
+          <button id="btnGenerate" class="btn-generate">
+            <span>⚡ GERAR ÍCONES</span>
+          </button>
+        </section>
+
+        <section class="card results-card" id="resultsCard" style="display: none">
+          <h2 class="card-title">Downloads</h2>
+          <div class="results-grid" id="resultsGrid"></div>
+
+          <div class="divider"></div>
+
+          <h3 class="config-title">Arquivos de Configuração</h3>
+          <p class="config-hint">Copie e cole no seu projeto</p>
+          <div class="config-buttons">
+            <button class="btn-copy" onclick="App.copyManifest()">
+              <span>📋 Copiar manifest.webmanifest</span>
+            </button>
+            <button class="btn-copy" onclick="App.copyBrowserConfig()">
+              <span>📋 Copiar browserconfig.xml</span>
+            </button>
+            <button class="btn-copy" onclick="App.copyHtmlTags()">
+              <span>📋 Copiar HTML Tags</span>
+            </button>
+          </div>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <p>
+          © <span id="anoAtual"></span>
+          Anderson Pinheiro - Todos os direitos reservados.
+        </p>
+      </footer>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script src="js/imageProcessor.js"></script>
+    <script src="js/converter.js"></script>
+    <script src="js/download.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+      document.getElementById("anoAtual").textContent =
+        new Date().getFullYear();
+    </script>
