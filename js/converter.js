@@ -2,13 +2,11 @@ const IcoConverter = {
   async createIco(sizes) {
     const images = [];
     for (const size of sizes) {
-      const dataUrl = IconGenerator.toDataURL(size);
+      const dataUrl = await IconGenerator.toDataURL(size);
       const base64 = dataUrl.split(',')[1];
       const binary = atob(base64);
       const bytes = new Uint8Array(binary.length);
-      for (let i = 0; i < binary.length; i++) {
-        bytes[i] = binary.charCodeAt(i);
-      }
+      for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
       images.push({ size, data: bytes });
     }
 

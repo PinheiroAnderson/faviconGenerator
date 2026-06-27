@@ -24,14 +24,7 @@ const ZipDownloader = {
   },
 
   async downloadDataUrl(dataUrl, fileName) {
-    const base64 = dataUrl.split(',')[1];
-    const binary = atob(base64);
-    const bytes = new Uint8Array(binary.length);
-    for (let i = 0; i < binary.length; i++) {
-      bytes[i] = binary.charCodeAt(i);
-    }
-    const mime = dataUrl.match(/data:([^;]+);/)?.[1] || 'application/octet-stream';
-    const blob = new Blob([bytes], { type: mime });
+    const blob = await (await fetch(dataUrl)).blob();
     saveAs(blob, fileName);
   }
 };
