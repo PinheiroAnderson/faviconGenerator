@@ -26,10 +26,10 @@ const IconGenerator = {
     };
   },
 
-  init() {
-    this.previewCanvas = document.getElementById('previewCanvas');
-    this.previewCtx = this.previewCanvas.getContext('2d');
-  },
+init() {
+     this.previewCanvas = document.getElementById('previewCanvas');
+     this.previewCtx = this.previewCanvas.getContext('2d', { alpha: true });
+   },
 
   async loadImage(file) {
     return new Promise((resolve, reject) => {
@@ -48,28 +48,21 @@ const IconGenerator = {
     });
   },
 
-  updatePreview() {
-    if (!this.image) return;
-    const canvas = this.previewCanvas;
-    const ctx = this.previewCtx;
-    const w = canvas.width;
-    const h = canvas.height;
+updatePreview() {
+     if (!this.image) return;
+     const canvas = this.previewCanvas;
+     const ctx = this.previewCtx;
+     const w = canvas.width;
+     const h = canvas.height;
 
-    ctx.clearRect(0, 0, w, h);
+     ctx.clearRect(0, 0, w, h);
 
-    if (this.bgType === 'white') {
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, w, h);
-    } else if (this.bgType === 'black') {
-      ctx.fillStyle = '#000000';
-      ctx.fillRect(0, 0, w, h);
-    } else if (this.bgType === 'blue') {
-      ctx.fillStyle = '#3b82f6';
-      ctx.fillRect(0, 0, w, h);
-    } else if (this.bgType === 'custom') {
-      ctx.fillStyle = this.bgColor;
-      ctx.fillRect(0, 0, w, h);
-    }
+     if (this.bgType === 'transparent') {
+       // Canvas já é transparente por padrão
+     } else {
+       ctx.fillStyle = this.bgColor;
+       ctx.fillRect(0, 0, w, h);
+     }
 
     const scale = this.zoom;
     const drawW = Math.min(w, this.image.width * scale);
@@ -83,25 +76,18 @@ const IconGenerator = {
     ctx.drawImage(this.image, offsetX, offsetY, drawW, drawH);
   },
 
-  renderCanvas(size) {
-    const canvas = document.createElement('canvas');
-    canvas.width = size;
-    canvas.height = size;
-    const ctx = canvas.getContext('2d');
+renderCanvas(size) {
+     const canvas = document.createElement('canvas');
+     canvas.width = size;
+     canvas.height = size;
+     const ctx = canvas.getContext('2d', { alpha: true });
 
-    if (this.bgType === 'white') {
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, size, size);
-    } else if (this.bgType === 'black') {
-      ctx.fillStyle = '#000000';
-      ctx.fillRect(0, 0, size, size);
-    } else if (this.bgType === 'blue') {
-      ctx.fillStyle = '#3b82f6';
-      ctx.fillRect(0, 0, size, size);
-    } else if (this.bgType === 'custom') {
-      ctx.fillStyle = this.bgColor;
-      ctx.fillRect(0, 0, size, size);
-    }
+     if (this.bgType === 'transparent') {
+       // Canvas já é transparente por padrão
+     } else {
+       ctx.fillStyle = this.bgColor;
+       ctx.fillRect(0, 0, size, size);
+     }
 
     const scale = this.zoom;
     const drawW = Math.min(size, this.image.width * scale);

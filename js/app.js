@@ -56,61 +56,80 @@ const App = {
     });
   },
 
-  bindControls() {
-    const zoom = document.getElementById('zoom');
-    const posX = document.getElementById('posX');
-    const posY = document.getElementById('posY');
-    const zoomVal = document.getElementById('zoomVal');
-    const posXVal = document.getElementById('posXVal');
-    const posYVal = document.getElementById('posYVal');
+bindControls() {
+     const zoom = document.getElementById('zoom');
+     const posX = document.getElementById('posX');
+     const posY = document.getElementById('posY');
+     const zoomVal = document.getElementById('zoomVal');
+     const posXVal = document.getElementById('posXVal');
+     const posYVal = document.getElementById('posYVal');
 
-    zoom.addEventListener('input', () => {
-      IconGenerator.zoom = parseFloat(zoom.value);
-      zoomVal.textContent = IconGenerator.zoom.toFixed(2) + 'x';
-      IconGenerator.updatePreview();
-    });
+     zoom.addEventListener('input', () => {
+       IconGenerator.zoom = parseFloat(zoom.value);
+       zoomVal.textContent = IconGenerator.zoom.toFixed(2) + 'x';
+       IconGenerator.updatePreview();
+     });
 
-    posX.addEventListener('input', () => {
-      IconGenerator.posX = parseInt(posX.value, 10);
-      posXVal.textContent = IconGenerator.posX;
-      IconGenerator.updatePreview();
-    });
+     posX.addEventListener('input', () => {
+       IconGenerator.posX = parseInt(posX.value, 10);
+       posXVal.textContent = IconGenerator.posX;
+       IconGenerator.updatePreview();
+     });
 
-    posY.addEventListener('input', () => {
-      IconGenerator.posY = parseInt(posY.value, 10);
-      posYVal.textContent = IconGenerator.posY;
-      IconGenerator.updatePreview();
-    });
+     posY.addEventListener('input', () => {
+       IconGenerator.posY = parseInt(posY.value, 10);
+       posYVal.textContent = IconGenerator.posY;
+       IconGenerator.updatePreview();
+     });
 
-    document.querySelectorAll('.bg-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.bg-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        const bg = btn.dataset.bg;
-        IconGenerator.bgType = bg;
+     document.querySelectorAll('.bg-btn').forEach(btn => {
+       btn.addEventListener('click', () => {
+         document.querySelectorAll('.bg-btn').forEach(b => b.classList.remove('active'));
+         btn.classList.add('active');
+         const bg = btn.dataset.bg;
+         IconGenerator.bgType = bg;
 
-        if (bg === 'custom') {
-          document.getElementById('bgColor').click();
-        } else if (bg === 'white') {
-          IconGenerator.bgColor = '#ffffff';
-        } else if (bg === 'black') {
-          IconGenerator.bgColor = '#000000';
-        } else if (bg === 'blue') {
-          IconGenerator.bgColor = '#3b82f6';
-        } else if (bg === 'transparent') {
-          IconGenerator.bgColor = 'transparent';
-        }
-        IconGenerator.updatePreview();
-      });
-    });
+         if (bg === 'custom') {
+           IconGenerator.bgColor = document.getElementById('bgColor').value;
+           document.getElementById('bgColor').click();
+         } else if (bg === 'white') {
+           IconGenerator.bgColor = '#ffffff';
+         } else if (bg === 'black') {
+           IconGenerator.bgColor = '#000000';
+         } else if (bg === 'blue') {
+           IconGenerator.bgColor = '#3b82f6';
+         } else if (bg === 'transparent') {
+           IconGenerator.bgColor = 'transparent';
+         }
+         this.updateCanvasBg();
+         IconGenerator.updatePreview();
+       });
+     });
 
-    document.getElementById('bgColor').addEventListener('input', (e) => {
-      IconGenerator.bgColor = e.target.value;
-      IconGenerator.updatePreview();
-    });
-  },
+     document.getElementById('bgColor').addEventListener('input', (e) => {
+       IconGenerator.bgColor = e.target.value;
+       IconGenerator.bgType = 'custom';
+       this.updateCanvasBg();
+       IconGenerator.updatePreview();
+     });
+   },
 
-  bindPlatforms() {
+   updateCanvasBg() {
+     const canvasBg = document.getElementById('canvasBg');
+     const bgBtn = document.querySelector('.bg-btn.active');
+     if (canvasBg && bgBtn) {
+       const bg = bgBtn.dataset.bg;
+       if (bg === 'transparent') {
+         canvasBg.style.background = 'none';
+       } else if (bg === 'custom') {
+         canvasBg.style.background = IconGenerator.bgColor;
+       } else {
+         canvasBg.style.background = IconGenerator.bgColor;
+       }
+     }
+   },
+
+   bindPlatforms() {
     const checkboxes = ['chkWeb', 'chkWindows', 'chkAndroid', 'chkiOS', 'chkLinux'];
     checkboxes.forEach(id => {
       document.getElementById(id).addEventListener('change', () => {
@@ -132,15 +151,16 @@ const App = {
       return;
     }
 
-    try {
-      await IconGenerator.loadImage(file);
-      this.loadedFile = file;
-      document.getElementById('uploadCard').style.display = 'none';
-      document.getElementById('previewCard').style.display = 'block';
-      document.getElementById('platformsCard').style.display = 'block';
-      document.getElementById('resultsCard').style.display = 'none';
-      IconGenerator.updatePreview();
-    } catch (err) {
+try {
+       await IconGenerator.loadImage(file);
+       this.loadedFile = file;
+       document.getElementById('uploadCard').style.display = 'none';
+       document.getElementById('previewCard').style.display = 'block';
+       document.getElementById('platformsCard').style.display = 'block';
+       document.getElementById('resultsCard').style.display = 'none';
+       this.updateCanvasBg();
+       IconGenerator.updatePreview();
+     } catch (err) {
       this.showToast('Erro ao carregar imagem.', false);
       console.error(err);
     }
