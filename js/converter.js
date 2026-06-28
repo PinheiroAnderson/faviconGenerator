@@ -3,10 +3,10 @@ const IcoConverter = {
     const images = [];
     for (const size of sizes) {
       const dataUrl = await IconGenerator.toDataURL(size);
-      const base64 = dataUrl.split(',')[1];
-      const binary = atob(base64);
-      const bytes = new Uint8Array(binary.length);
-      for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+      const response = await fetch(dataUrl);
+      const blob = await response.blob();
+      const arrayBuffer = await blob.arrayBuffer();
+      const bytes = new Uint8Array(arrayBuffer);
       images.push({ size, data: bytes });
     }
 
